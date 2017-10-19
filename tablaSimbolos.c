@@ -19,7 +19,7 @@ int node_getId(node* element);
 
 void node_create(node* newNode){
     *newNode = (struct tableNode*)malloc(sizeof(struct tableNode));
-    (*newNode)->key = malloc(sizeof(char)*127);
+    (*newNode)->key = malloc(sizeof(char)*128);
 }
 
 char* node_getKey(node* element) {

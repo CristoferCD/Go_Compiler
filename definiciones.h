@@ -2,7 +2,3 @@
 // Created by crist on 18/10/17.
 //
 
-#ifndef GO_COMPILER_DEFINITIONS_H
-#define GO_COMPILER_DEFINITIONS_H
-
-#endif //GO_COMPILER_DEFINITIONS_H
