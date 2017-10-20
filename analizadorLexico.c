@@ -3,35 +3,38 @@
 //
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "analizadorLexico.h"
 #include "sistemaEntrada.h"
 #include "tablaSimbolos.h"
 
-int simul_Automata (char item);
+int init_Automata ();
 
 node next_component() {
     node nextComp;
     node_create(&nextComp);
     char* componente;
-    char nextChar;
 
-    int accepted = 0;
-    do {
-        nextChar = next_char();
-        accepted = simul_Automata(nextChar);
-    } while(accepted == 0);
+    int id = init_Automata();
+
+    //TODO: negative error codes (o dejar que el automata use el logger)
 
     componente = input_Sys_getComponent();
 
+    /**
+     * if (id == ID)
+     *      buscar o insertar en TS
+     **/
+
+
+    node_setId(&nextComp, id);
     node_setKey(&nextComp, componente);
     return nextComp;
 }
 
-int simul_Automata (char item) {
-    if (item == ' ' || item == '\n' || item == 0 || item == -1)
-        return 1;
-    else
-        return 0;
+int init_Automata () {
+    while(1) {
+        char nextChar = next_char();
+        if (nextChar == EOF) return nextChar;
+        if (nextChar == ' ' || nextChar == '\n') return 1;
+    }
 }

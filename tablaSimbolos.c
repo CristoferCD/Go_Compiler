@@ -16,10 +16,10 @@ typedef struct tableNode* node;
 char* node_getKey(node* element);
 void node_setKey(node* element, char* key);
 int node_getId(node* element);
+void node_setId(node* element, int id);
 
 void node_create(node* newNode){
     *newNode = (struct tableNode*)malloc(sizeof(struct tableNode));
-    (*newNode)->key = malloc(sizeof(char)*128);
 }
 
 char* node_getKey(node* element) {
@@ -27,5 +27,13 @@ char* node_getKey(node* element) {
 }
 
 void node_setKey(node* element, char* key) {
-    strcpy((*element)->key, key);
+    (*element)->key = key;
+}
+
+int node_getId(node* element) {
+    return (*element)->id;
+}
+
+void node_setId(node* element, int id) {
+    (*element)->id = id;
 }

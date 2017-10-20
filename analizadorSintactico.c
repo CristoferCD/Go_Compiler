@@ -7,8 +7,9 @@
 #include "analizadorLexico.h"
 
 void analyze() {
-    for(int i = 4095; i > 0; i--) {
-        node nextComp = next_component();
+    node nextComp = next_component();
+    while(node_getId(&nextComp) != EOF){
         printf("%s", node_getKey(&nextComp));
+        nextComp = next_component();
     }
 }
