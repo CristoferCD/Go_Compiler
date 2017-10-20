@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "sistemaEntrada.h"
+#include "gestorErrores.h"
 
 #define BLOCK_SIZE 64
 
@@ -15,11 +16,12 @@ char* inicio;
 char* delantero;
 FILE* file;
 
-unsigned int getComponentSize() {
+int getComponentSize() {
     char* inicioAux = inicio;
     char* delanteroAux = delantero;
     unsigned int size = 0;
     while (inicioAux != delanteroAux) {
+        if (*inicioAux == EOF) return -1;
         inicioAux++;
         size++;
     }
@@ -44,11 +46,13 @@ char next_char() {
     char newChar = *delantero;
     if (newChar == EOF) {
         if (delantero == &bloqueA[BLOCK_SIZE-1]) {
-            fread(bloqueB, sizeof(char), BLOCK_SIZE-1, file);
+            size_t totalRead = fread(bloqueB, sizeof(char), BLOCK_SIZE-1, file);
+            if (totalRead < (BLOCK_SIZE - 1)) bloqueB[totalRead] = EOF;
             delantero = bloqueB;
             newChar = *delantero;
         } else if (delantero == &bloqueB[BLOCK_SIZE-1]) {
-            fread(bloqueA, sizeof(char), BLOCK_SIZE-1, file);
+            size_t totalRead = fread(bloqueA, sizeof(char), BLOCK_SIZE-1, file);
+            if (totalRead < (BLOCK_SIZE - 1)) bloqueA[totalRead] = EOF;
             delantero = bloqueA;
             newChar = *delantero;
         } else
@@ -59,10 +63,52 @@ char next_char() {
     return newChar;
 }
 
+char* getPartialComponent() {
+    char* inicioAux = inicio;
+    unsigned int size = 0;
+
+    //Get part in first block
+    while (*inicioAux != EOF) {
+        inicioAux++;
+        size++;
+    }
+    char* firstPart = malloc(size);
+    strncpy(firstPart, inicio, size);
+
+    //Change to the other block
+    if (inicioAux == &bloqueA[BLOCK_SIZE-1])
+        inicioAux = bloqueB;
+    else if (inicioAux == &bloqueB[BLOCK_SIZE-1])
+        inicioAux = bloqueA;
+    else
+        error_log("[INPUT_SYS] Error changing block", 0);
+
+    //Get second part
+    char* secondAux = inicioAux;
+    unsigned int size1 = 0;
+    while(secondAux != delantero) {
+        secondAux++;
+        size1++;
+    }
+    // Generate full component
+    char* component = malloc(size+size1);
+    strncpy(component, firstPart, size);
+    strncat(component, inicioAux, size1);
+
+    return component;
+}
+
 char* input_Sys_getComponent() {
-    size_t componentSize = getComponentSize();
-    char* currentComponent = malloc(componentSize);
-    strncpy(currentComponent, inicio, componentSize);
+    //TODO: si size es 0 el lexema seria de un solo char, pero esta funcionando?
+    int componentSize = getComponentSize();
+    //If component is between both blocks, concatenate
+    char* currentComponent;
+    if (componentSize == -1) {
+        currentComponent = getPartialComponent();
+    } else {
+        currentComponent = malloc((size_t) componentSize);
+        strncpy(currentComponent, inicio, (size_t) componentSize);
+    }
     inicio = delantero;
     return currentComponent;
 }
