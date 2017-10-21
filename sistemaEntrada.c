@@ -8,13 +8,14 @@
 #include "sistemaEntrada.h"
 #include "gestorErrores.h"
 
-#define BLOCK_SIZE 64
+#define BLOCK_SIZE 4096
 
 char bloqueA[BLOCK_SIZE];
 char bloqueB[BLOCK_SIZE];
 char* inicio;
 char* delantero;
 FILE* file;
+unsigned int currentLine = 0;
 
 int getComponentSize() {
     char* inicioAux = inicio;
@@ -44,6 +45,9 @@ void inputSys_dispose() {
 
 char next_char() {
     char newChar = *delantero;
+
+    if (newChar == '\n') currentLine++;
+
     if (newChar == EOF) {
         if (delantero == &bloqueA[BLOCK_SIZE-1]) {
             size_t totalRead = fread(bloqueB, sizeof(char), BLOCK_SIZE-1, file);
@@ -59,7 +63,6 @@ char next_char() {
             inputSys_dispose();
     } else
         delantero++;
-    //TODO: si el lexema queda a medias?
     return newChar;
 }
 
@@ -99,7 +102,6 @@ char* getPartialComponent() {
 }
 
 char* input_Sys_getComponent() {
-    //TODO: si size es 0 el lexema seria de un solo char, pero esta funcionando?
     int componentSize = getComponentSize();
     //If component is between both blocks, concatenate
     char* currentComponent;
@@ -111,4 +113,8 @@ char* input_Sys_getComponent() {
     }
     inicio = delantero;
     return currentComponent;
+}
+
+int getCurrentLine() {
+    return currentLine;
 }

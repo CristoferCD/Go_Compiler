@@ -37,3 +37,4 @@ int node_getId(node* element) {
 void node_setId(node* element, int id) {
     (*element)->id = id;
 }
+
