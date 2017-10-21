@@ -31,7 +31,8 @@ int getComponentSize() {
 
 void inputSys_init() {
     file = fopen("../source/concurrentSum.go", "rb");
-    fread(bloqueA, sizeof(char), BLOCK_SIZE-1, file);
+    size_t sizeRead = fread(bloqueA, sizeof(char), BLOCK_SIZE-1, file);
+    if (sizeRead < (BLOCK_SIZE-1)) bloqueA[sizeRead] = EOF;
     bloqueA[BLOCK_SIZE-1] = EOF;
     bloqueB[BLOCK_SIZE-1] = EOF;
 
