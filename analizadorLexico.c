@@ -19,8 +19,6 @@ node next_component() {
 
     int lexComponent = init_Automata();
 
-    //TODO: negative error codes (o dejar que el automata use el logger)
-
     lexema = input_Sys_getComponent();
 
     /**
@@ -38,6 +36,7 @@ int init_Automata () {
     while(1) {
         char nextChar = next_char();
         if (nextChar == EOF) return nextChar;
+        else if (nextChar == '"') return isString();
         else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem();
         else if (nextChar == ' ' || nextChar == '\n' || nextChar == '\r') return 1;
         else if (nextChar == '/') return isComment();
@@ -72,8 +71,28 @@ int isComment() {
             }
             if (nextChar == EOF) {
                 error_log("[LEX] Error analyzing multiline comment. Not closed\n", currentLine);
-                return ERROR_COMMENT;
+                return ERROR;
             }
         }
     }
+}
+
+int isString() {
+    char nextChar = next_char();
+    while(nextChar != '"') {
+        nextChar = next_char();
+        if (nextChar == '\\') {
+            nextChar = next_char();
+            if (nextChar == '"') {
+                nextChar = next_char();
+            } else if (nextChar == 'r' || nextChar == 'n' || nextChar == EOF) {
+                error_log("[LEX] Error analyzing string, Not closed\n", getCurrentLine());
+                return ERROR;
+            }
+        } else if (nextChar == '\r' || nextChar == '\n' || nextChar == EOF) {
+            error_log("[LEX] Error analyzing string, Not closed\n", getCurrentLine());
+            return ERROR;
+        }
+    }
+    return STRING;
 }
