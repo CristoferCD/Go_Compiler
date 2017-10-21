@@ -118,3 +118,12 @@ char* input_Sys_getComponent() {
 int getCurrentLine() {
     return currentLine;
 }
+
+void undoLastMove() {
+    if (delantero == &bloqueA[0])
+        delantero = &bloqueB[BLOCK_SIZE-2];
+    else if (delantero == &bloqueB[0])
+        delantero = &bloqueA[BLOCK_SIZE-2];
+    else
+        delantero--;
+}

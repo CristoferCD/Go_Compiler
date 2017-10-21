@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <ctype.h>
 #include "analizadorLexico.h"
 #include "sistemaEntrada.h"
 #include "tablaSimbolos.h"
@@ -14,13 +15,13 @@ int init_Automata ();
 node next_component() {
     node nextComp;
     node_create(&nextComp);
-    char* componente;
+    char* lexema;
 
-    int id = init_Automata();
+    int lexComponent = init_Automata();
 
     //TODO: negative error codes (o dejar que el automata use el logger)
 
-    componente = input_Sys_getComponent();
+    lexema = input_Sys_getComponent();
 
     /**
      * if (id == ID)
@@ -28,8 +29,8 @@ node next_component() {
      **/
 
 
-    node_setId(&nextComp, id);
-    node_setKey(&nextComp, componente);
+    node_setId(&nextComp, lexComponent);
+    node_setKey(&nextComp, lexema);
     return nextComp;
 }
 
@@ -37,9 +38,22 @@ int init_Automata () {
     while(1) {
         char nextChar = next_char();
         if (nextChar == EOF) return nextChar;
-        else if (nextChar == ' ' || nextChar == '\n') return 1;
+        else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem();
+        else if (nextChar == ' ' || nextChar == '\n' || nextChar == '\r') return 1;
         else if (nextChar == '/') return isComment();
+        else return 42;
     }
+}
+
+int alphanumericItem() {
+    char nextChar = next_char();
+    while (isalnum(nextChar) || nextChar == '_') {
+        nextChar = next_char();
+    }
+    //Discards last character that wasn't alpha
+    undoLastMove();
+
+    return ID;
 }
 
 int isComment() {

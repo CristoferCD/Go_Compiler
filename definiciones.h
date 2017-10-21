@@ -3,4 +3,5 @@
 //
 
 #define COMMENT 200
+#define ID 201
 #define ERROR_COMMENT (-2)
