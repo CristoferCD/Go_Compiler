@@ -6,20 +6,32 @@
 #include <string.h>
 #include "tablaSimbolos.h"
 
-struct tableNode {
+typedef struct itemNode{
     int id;
     char* key;
+}itemNode;
+
+struct treeNode{
+    itemNode info;
+    struct treeNode *left, *right;
 };
 
-typedef struct tableNode* node;
+typedef struct itemNode* node;
+typedef struct treeNode* abb;
 
-char* node_getKey(node* element);
-void node_setKey(node* element, char* key);
-int node_getId(node* element);
-void node_setId(node* element, int id);
+/////////////////////////////////////////////
+itemNode remove_last(abb *A) ;
+void remove(abb *A, char* key) ;
+void destroy(abb* A) ;
+unsigned contains(abb* A, char* key) ;
+void insert(abb *A, itemNode element) ;
+////////////////////////////////////////////
+
+// Variable used as root of the symbol table
+abb *tableRoot;
 
 void node_create(node* newNode){
-    *newNode = (struct tableNode*)malloc(sizeof(struct tableNode));
+    *newNode = malloc(sizeof(struct itemNode));
 }
 
 char* node_getKey(node* element) {
@@ -38,3 +50,99 @@ void node_setId(node* element, int id) {
     (*element)->id = id;
 }
 
+void symbolTable_init() {
+    *tableRoot = NULL;
+}
+
+
+void symbolTable_free() {
+    destroy(tableRoot);
+}
+
+void destroy(abb* A) {
+    if (*A != NULL) {
+        destroy(&(*A)->left);
+        destroy(&(*A)->right);
+        free(*A);
+        *A = NULL;
+    }
+}
+
+unsigned isEmpty(abb A) {
+    return A == NULL;
+}
+
+void symbolTable_remove(char* key) {
+    if (*tableRoot != NULL)
+        remove(tableRoot, key);
+}
+
+void remove(abb *A, char* key) {
+    abb aux;
+    if (*A != NULL) {
+        int keyComparison = strcmp(key, (*A)->info.key);
+        if(keyComparison < 0)
+            remove(&(*A)->left, key);
+        else if (keyComparison > 0)
+            remove(&(*A)->right, key);
+        else if ((*A)->left == NULL && (*A)->right == NULL) {
+            free(*A);
+            *A = NULL;
+        } else if ((*A)->left == NULL) {
+            aux = *A;
+            *A = (*A)->right;
+            free(aux);
+        } else if ((*A)->right == NULL) {
+            aux = *A;
+            *A = (*A)->left;
+            free(aux);
+        } else {
+            (*A)->info = remove_last(&(*A)->right);
+        }
+    }
+}
+
+itemNode remove_last(abb *A) {
+    abb aux;
+    itemNode node;
+    if ((*A)->left == NULL) {
+        node = (*A)->info;
+        aux = *A;
+        *A = (*A)->right;
+        free(aux);
+        return node;
+    } else {
+        return remove_last(&(*A)->left);
+    }
+}
+
+unsigned symbolTable_contains(char* key) {
+    return contains(tableRoot, key);
+}
+
+unsigned contains(abb* A, char* key) {
+    if(isEmpty(A)) return 0;
+    else {
+        int keyComparison = strcmp(key, (*A)->info.key);
+        if (keyComparison == 0) return 1;
+        else if (keyComparison > 0) return contains(&(*A)->right, key);
+        else return contains(&(*A)->left, key);
+    }
+}
+
+void symbolTable_insert(node element) {
+    insert(tableRoot, *element);
+}
+
+void insert(abb *A, itemNode element) {
+    if (isEmpty(*A)) {
+        *A = malloc(sizeof(struct treeNode));
+        (*A)->info = element;
+        (*A)->left = NULL;
+        (*A)->right = NULL;
+    } else if (strcmp((*A)->info.key, element.key) < 0) {
+        insert(&(*A)->left, element);
+    } else {
+        insert(&(*A)->right, element);
+    }
+}

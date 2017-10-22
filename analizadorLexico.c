@@ -10,7 +10,14 @@
 #include "definiciones.h"
 #include "gestorErrores.h"
 
+////////////////////////
+// Function Declarations
 int init_Automata ();
+int isNumber();
+int alphanumericItem();
+int isComment();
+int isString();
+////////////////////////
 
 node next_component() {
     node nextComp;
@@ -36,12 +43,17 @@ int init_Automata () {
     while(1) {
         char nextChar = next_char();
         if (nextChar == EOF) return nextChar;
+        else if (isdigit(nextChar) || nextChar == '.') return isNumber();
         else if (nextChar == '"') return isString();
         else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem();
         else if (nextChar == ' ' || nextChar == '\n' || nextChar == '\r') return 1;
         else if (nextChar == '/') return isComment();
         else return 42;
     }
+}
+
+int isNumber() {
+    return 1;
 }
 
 int alphanumericItem() {

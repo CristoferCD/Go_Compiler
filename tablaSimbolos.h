@@ -2,7 +2,7 @@
 // Created by crist on 18/10/17.
 //
 
-typedef struct tableNode* node;
+typedef struct itemNode* node;
 
 void symbolTable_init();
 void node_create(node* newNode);
