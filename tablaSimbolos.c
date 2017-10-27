@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "tablaSimbolos.h"
 #include "reservedWords.h"
@@ -22,7 +23,7 @@ typedef struct treeNode* abb;
 
 /////////////////////////////////////////////
 itemNode remove_last(abb *A) ;
-void remove(abb *A, char* key) ;
+void treeRemove(abb *A, char* key) ;
 void destroy(abb* A) ;
 short contains(abb* A, char* key) ;
 void insert(abb *A, itemNode element) ;
@@ -84,17 +85,17 @@ unsigned isEmpty(abb A) {
 
 void symbolTable_remove(char* key) {
     if (*tableRoot != NULL)
-        remove(tableRoot, key);
+        treeRemove(tableRoot, key);
 }
 
-void remove(abb *A, char* key) {
+void treeRemove(abb *A, char* key) {
     abb aux;
     if (*A != NULL) {
         int keyComparison = strcmp(key, (*A)->info.key);
         if(keyComparison < 0)
-            remove(&(*A)->left, key);
+            treeRemove(&(*A)->left, key);
         else if (keyComparison > 0)
-            remove(&(*A)->right, key);
+            treeRemove(&(*A)->right, key);
         else if ((*A)->left == NULL && (*A)->right == NULL) {
             free(*A);
             *A = NULL;
@@ -154,5 +155,17 @@ void insert(abb *A, itemNode element) {
         insert(&(*A)->left, element);
     } else {
         insert(&(*A)->right, element);
+    }
+}
+
+void symbolTable_print() {
+    printTree(tableRoot);
+}
+
+void printTree(abb* A) {
+    if (!isEmpty(*A)) {
+        printTree(&(*A)->left);
+        printf("[TS] -- %s (%d)\n", (*A)->info.key, (*A)->info.id);
+        printTree(&(*A)->right);
     }
 }
