@@ -1,7 +1,3 @@
-//
-// Created by crist on 18/10/17.
-//
-
 #define COMMENT 300
 #define ID 301
 #define GENERIC_T 302

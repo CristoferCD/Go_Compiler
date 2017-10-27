@@ -1,7 +1,3 @@
-//
-// Created by crist on 27/10/17.
-//
-
 #include "reservedWords.h"
 #include "definiciones.h"
 

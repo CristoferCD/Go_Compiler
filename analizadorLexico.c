@@ -1,7 +1,3 @@
-//
-// Created by crist on 18/10/17.
-//
-
 #include <stdio.h>
 #include <ctype.h>
 #include "analizadorLexico.h"
@@ -31,11 +27,13 @@ node next_component() {
     node_setId(&nextComp, lexComponent);
     node_setKey(&nextComp, lexema);
 
-    /*if search
-     *  get compLex
-     *else
-     *  insert
-    */
+    if (lexComponent == ID) {
+        int componentFoundInTable = symbolTable_getComponent(lexema);
+        if (componentFoundInTable == ERROR)
+            symbolTable_insert(nextComp);
+        else
+            node_setId(&nextComp, componentFoundInTable);
+    }
 
 
     return nextComp;
@@ -55,7 +53,7 @@ int init_Automata () {
 }
 
 int isNumber() {
-    return 1;
+    return 11;
 }
 
 int alphanumericItem() {

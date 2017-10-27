@@ -1,12 +1,9 @@
-//
-// Created by crist on 18/10/17.
-//
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "tablaSimbolos.h"
 #include "reservedWords.h"
+#include "definiciones.h"
 
 typedef struct itemNode{
     int id;
@@ -25,7 +22,7 @@ typedef struct treeNode* abb;
 itemNode remove_last(abb *A) ;
 void treeRemove(abb *A, char* key) ;
 void destroy(abb* A) ;
-short contains(abb* A, char* key) ;
+int contains(abb* A, char* key) ;
 void insert(abb *A, itemNode element) ;
 ////////////////////////////////////////////
 
@@ -92,9 +89,9 @@ void treeRemove(abb *A, char* key) {
     abb aux;
     if (*A != NULL) {
         int keyComparison = strcmp(key, (*A)->info.key);
-        if(keyComparison < 0)
+        if(keyComparison > 0)
             treeRemove(&(*A)->left, key);
-        else if (keyComparison > 0)
+        else if (keyComparison < 0)
             treeRemove(&(*A)->right, key);
         else if ((*A)->left == NULL && (*A)->right == NULL) {
             free(*A);
@@ -127,15 +124,11 @@ itemNode remove_last(abb *A) {
     }
 }
 
-short symbolTable_search(char* key) {
-    return contains(tableRoot, key);
-}
-
-short contains(abb* A, char* key) {
-    if(isEmpty(A)) return 0;
+int contains(abb* A, char* key) {
+    if(isEmpty(*A)) return ERROR;
     else {
         int keyComparison = strcmp(key, (*A)->info.key);
-        if (keyComparison == 0) return 1;
+        if (keyComparison == 0) return (*A)->info.id;
         else if (keyComparison > 0) return contains(&(*A)->right, key);
         else return contains(&(*A)->left, key);
     }
@@ -151,7 +144,7 @@ void insert(abb *A, itemNode element) {
         (*A)->info = element;
         (*A)->left = NULL;
         (*A)->right = NULL;
-    } else if (strcmp((*A)->info.key, element.key) < 0) {
+    } else if (strcmp((*A)->info.key, element.key) > 0) {
         insert(&(*A)->left, element);
     } else {
         insert(&(*A)->right, element);
@@ -168,4 +161,8 @@ void printTree(abb* A) {
         printf("[TS] -- %s (%d)\n", (*A)->info.key, (*A)->info.id);
         printTree(&(*A)->right);
     }
+}
+
+int symbolTable_getComponent(char* key) {
+    return contains(tableRoot, key);
 }

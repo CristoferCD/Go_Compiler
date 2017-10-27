@@ -1,6 +1,3 @@
-//
-// Created by crist on 18/10/17.
-//
 
 #include <stdio.h>
 #include <string.h>
@@ -16,6 +13,7 @@ char* inicio;
 char* delantero;
 FILE* file;
 unsigned int currentLine = 0;
+char blockAlreadyRead = 0;
 
 int getComponentSize() {
     char* inicioAux = inicio;
@@ -30,8 +28,13 @@ int getComponentSize() {
 }
 
 void inputSys_init() {
-    //TODO: check error when opening
     file = fopen("../source/concurrentSum.go", "rb");
+
+    if (file == NULL) {
+        error_log("Error opening file\n", 0);
+        exit(11);
+    }
+
     size_t sizeRead = fread(bloqueA, sizeof(char), BLOCK_SIZE-1, file);
     if (sizeRead < (BLOCK_SIZE-1)) bloqueA[sizeRead] = EOF;
     bloqueA[BLOCK_SIZE-1] = EOF;
@@ -52,13 +55,21 @@ char next_char() {
     //TODO: check if lex is bigger than buffer size
     if (newChar == EOF) {
         if (delantero == &bloqueA[BLOCK_SIZE-1]) {
-            size_t totalRead = fread(bloqueB, sizeof(char), BLOCK_SIZE-1, file);
-            if (totalRead < (BLOCK_SIZE - 1)) bloqueB[totalRead] = EOF;
+            if (!blockAlreadyRead) {
+                size_t totalRead = fread(bloqueB, sizeof(char), BLOCK_SIZE - 1, file);
+                if (totalRead < (BLOCK_SIZE - 1)) bloqueB[totalRead] = EOF;
+            } else {
+                blockAlreadyRead = 0;
+            }
             delantero = bloqueB;
             newChar = *delantero;
         } else if (delantero == &bloqueB[BLOCK_SIZE-1]) {
-            size_t totalRead = fread(bloqueA, sizeof(char), BLOCK_SIZE-1, file);
-            if (totalRead < (BLOCK_SIZE - 1)) bloqueA[totalRead] = EOF;
+            if (!blockAlreadyRead) {
+                size_t totalRead = fread(bloqueA, sizeof(char), BLOCK_SIZE - 1, file);
+                if (totalRead < (BLOCK_SIZE - 1)) bloqueA[totalRead] = EOF;
+            } else {
+                blockAlreadyRead = 0;
+            }
             delantero = bloqueA;
             newChar = *delantero;
         } else
@@ -123,10 +134,12 @@ int getCurrentLine() {
 
 void undoLastMove() {
     //TODO: if there is a block change, the next block is overwritten.
-    if (delantero == &bloqueA[0])
-        delantero = &bloqueB[BLOCK_SIZE-2];
-    else if (delantero == &bloqueB[0])
-        delantero = &bloqueA[BLOCK_SIZE-2];
-    else
+    if (delantero == &bloqueA[0]) {
+        delantero = &bloqueB[BLOCK_SIZE - 2];
+        blockAlreadyRead = 1;
+    } else if (delantero == &bloqueB[0]) {
+        delantero = &bloqueA[BLOCK_SIZE - 2];
+        blockAlreadyRead = 1;
+    } else
         delantero--;
 }
