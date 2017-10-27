@@ -2,38 +2,106 @@
 // Created by crist on 18/10/17.
 //
 
-#define COMMENT 200
-#define ID 201
-#define GENERIC_T 202
-#define BOOL 203
-#define BOOL_T 204
-#define BOOL_FALSE 205
-#define UINT8 206
-#define UINT16 207
-#define UINT32 208
-#define UINT64 209
-#define INT8 210
-#define INT16 211
-#define INT32 212
-#define INT64 213
-#define FLOAT32 214
-#define FLOAT64 215
-#define COMPLEX64 216
-#define COMPLEX128 217
-#define BYTE 206
-#define RUNE 208
-#define STRING 218
-#define MAKE 219
-#define NEW 220
-#define STRUCT 221
-#define FUNC 222
-#define CHANNEL 223
-#define CONST 224
-#define VAR 225
-#define PACKAGE 226
-#define IMPORT 227
-#define FOR 228
-#define RANGE 229
-#define REAL 230
-#define GO 231
+#define COMMENT 300
+#define ID 301
+#define GENERIC_T 302
+#define BOOL 303
+#define BOOL_T 304
+#define BOOL_FALSE 305
+#define UINT8 306
+#define UINT16 307
+#define UINT32 308
+#define UINT64 309
+#define INT8 310
+#define INT16 311
+#define INT32 312
+#define INT64 313
+#define FLOAT32 314
+#define FLOAT64 315
+#define COMPLEX64 316
+#define COMPLEX128 317
+#define BYTE 306
+#define RUNE 308
+#define STRING 318
+#define MAKE 319
+#define NEW 320
+#define STRUCT 321
+#define FUNC 322
+#define CHANNEL 323
+#define CONST 324
+#define VAR 325
+#define PACKAGE 326
+#define IMPORT 327
+#define FOR 328
+#define RANGE 329
+#define REAL 330
+#define GO 331
+#define BREAK 332
+#define CASE 333
+#define CONTINUE 334
+#define DEFAULT 335
+#define DEFER 336
+#define ELSE 337
+#define FALLTHROUGH 338
+#define GOTO 339
+#define IF 340
+#define INTERFACE 341
+#define MAP 342
+#define RETURN 343
+#define SELECT 344
+#define SWITCH 345
+#define TYPE 346
+
+//OPERATORS
+//+=
+#define OP_PLUSEQ 700
+//&=
+#define OP_AMPEQ 701
+//&&
+#define OP_AMPAMP 702
+//==
+#define OP_EQEQ 703
+//!=
+#define OP_NEQ 704
+//-=
+#define OP_SUBEQ 705
+//|=
+#define OP_OREQ 706
+//||
+#define OP_OROR 707
+//<=
+#define OP_LEQ 708
+//*=
+#define OP_MULTEQ 709
+//^=
+#define OP_EXPEQ 710
+//<-
+#define OP_LEFTARROW 711
+//>=
+#define OP_MEQ 712
+//<<
+#define OP_LESSLESS 713
+///=
+#define OP_FORWARDSLASHEQ 714
+//<<=
+#define OP_LESSLESSEQ 715
+//++
+#define OP_PLUSPLUS 716
+//:=
+#define OP_COLONEQ 717
+//>>
+#define OP_MOREMORE 718
+//%=
+#define OP_PERCENTAGEEQ 719
+//>>=
+#define OP_MOREMOREEQ 720
+//--
+#define OP_SUBSUB 721
+//...
+#define OP_DOTS 722
+//&^
+#define OP_AMPEXP 723
+//&^=
+#define OP_AMPEXPEQ 724
+
 #define ERROR (-42)

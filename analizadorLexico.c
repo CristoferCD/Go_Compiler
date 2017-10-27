@@ -6,9 +6,9 @@
 #include <ctype.h>
 #include "analizadorLexico.h"
 #include "sistemaEntrada.h"
-#include "tablaSimbolos.h"
 #include "definiciones.h"
 #include "gestorErrores.h"
+#include "tablaSimbolos.h"
 
 ////////////////////////
 // Function Declarations
@@ -28,14 +28,16 @@ node next_component() {
 
     lexema = input_Sys_getComponent();
 
-    /**
-     * if (id == ID)
-     *      buscar o insertar en TS
-     **/
-
-
     node_setId(&nextComp, lexComponent);
     node_setKey(&nextComp, lexema);
+
+    /*if search
+     *  get compLex
+     *else
+     *  insert
+    */
+
+
     return nextComp;
 }
 
@@ -45,7 +47,7 @@ int init_Automata () {
         if (nextChar == EOF) return nextChar;
         else if (isdigit(nextChar) || nextChar == '.') return isNumber();
         else if (nextChar == '"') return isString();
-        else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem();
+        else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem(); //Only _ return blankID
         else if (nextChar == ' ' || nextChar == '\n' || nextChar == '\r') return 1;
         else if (nextChar == '/') return isComment();
         else return 42;

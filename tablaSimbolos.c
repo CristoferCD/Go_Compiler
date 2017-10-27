@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tablaSimbolos.h"
+#include "reservedWords.h"
 
 typedef struct itemNode{
     int id;
@@ -23,7 +24,7 @@ typedef struct treeNode* abb;
 itemNode remove_last(abb *A) ;
 void remove(abb *A, char* key) ;
 void destroy(abb* A) ;
-unsigned contains(abb* A, char* key) ;
+short contains(abb* A, char* key) ;
 void insert(abb *A, itemNode element) ;
 ////////////////////////////////////////////
 
@@ -51,7 +52,16 @@ void node_setId(node* element, int id) {
 }
 
 void symbolTable_init() {
-    *tableRoot = NULL;
+    tableRoot = malloc(sizeof(abb*));
+    int i = 0;
+    node aux;
+    while(reservedWords_lexComp[i] != -42) {
+        node_create(&aux);
+        node_setKey(&aux, reservedWords[i]);
+        node_setId(&aux, reservedWords_lexComp[i]);
+        symbolTable_insert(aux);
+        i++;
+    }
 }
 
 
@@ -116,11 +126,11 @@ itemNode remove_last(abb *A) {
     }
 }
 
-unsigned symbolTable_contains(char* key) {
+short symbolTable_search(char* key) {
     return contains(tableRoot, key);
 }
 
-unsigned contains(abb* A, char* key) {
+short contains(abb* A, char* key) {
     if(isEmpty(A)) return 0;
     else {
         int keyComparison = strcmp(key, (*A)->info.key);
