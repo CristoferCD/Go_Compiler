@@ -53,6 +53,15 @@ int init_Automata () {
 }
 
 int isNumber() {
+    /**
+     * Try integer
+     *      - decimal (all is digit)
+     *      - octal (starting with 0, all 0...7)
+     *      - hex (0x and at least one hex digit)
+     * Try float
+     *
+     * Try imaginary
+     */
     return 11;
 }
 
@@ -106,5 +115,5 @@ int isString() {
             return ERROR;
         }
     }
-    return STRING;
+    return LIT_STRING;
 }
