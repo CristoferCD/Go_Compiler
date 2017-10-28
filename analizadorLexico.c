@@ -13,7 +13,7 @@ int isNumber(char firstChar);
 int alphanumericItem();
 int isComment();
 int isString();
-int isIntegerLiteral(char firstChar) ;
+int isNumberLiteral(char firstChar) ;
 int isDecimal() ;
 int isOctal() ;
 int isHexadecimal() ;
@@ -58,23 +58,19 @@ int init_Automata () {
 }
 
 int isNumber(char firstChar) {
+    int lexComponent = isNumberLiteral(firstChar);
 
-    // Do this last, as it's smaller
-    int lexComponent = isIntegerLiteral(firstChar);
-    /**
-     * Try integer
-     *      - decimal (all is digit)
-     *      - octal (starting with 0, all 0...7)
-     *      - hex (0x and at least one hex digit)
-     * Try float
-     *      -
-     * Try imaginary
-     *      - decimals or float ending with "i"
-     */
+    if (lexComponent != ERROR) { //Check imaginary
+        if (next_char() == 'i')
+            return LIT_IMAGINARY;
+        else
+            undoLastMove();
+    }
+
     return lexComponent;
 }
 
-int isIntegerLiteral(char firstChar) {
+int isNumberLiteral(char firstChar) {
     if (firstChar == '0') {
         char nextChar = next_char();
         if (nextChar == 'x' || nextChar == 'X')
@@ -85,8 +81,62 @@ int isIntegerLiteral(char firstChar) {
             undoLastMove();
             return isDecimal();    // Can be a decimal starting by 0 or just a 0 with an ending character like ; or \n
         }
-    } else if (firstChar >= '1' && firstChar <= '9')
-        return isDecimal();
+    } else if (firstChar >= '1' && firstChar <= '9') {
+        isDecimal(); // q1 -> q1
+        char nextChar = next_char();
+        if (nextChar == '.') { // q1 -> q5
+            nextChar = next_char();
+            if (isdigit(nextChar)) { // q5 -> q6
+                isDecimal();    // q6 -> q6
+                nextChar = next_char();
+            }
+            if (nextChar == 'e' | 'E') { // q5 | q6 -> q7
+                nextChar = next_char();
+                if (nextChar == '+' || nextChar == '-') nextChar = next_char();
+                if (isdigit(nextChar)) {
+                    isDecimal();
+                    return LIT_FLOAT;
+                } else {
+                    error_log("Error parsing float's exponent, expected decimal, found: ", getCurrentLine());
+                    return ERROR;
+                }
+            } else {
+                // Number ending in "."
+                undoLastMove();
+                return LIT_INTEGER;
+            }
+        } else if (nextChar == 'e' || nextChar == 'E') { // q1 -> q7
+            nextChar = next_char();
+            if (nextChar == '+' || nextChar == '-') nextChar = next_char();
+            if (isdigit(nextChar)) {
+                isDecimal();
+                return LIT_FLOAT;
+            } else {
+                error_log("Error parsing float's exponent, expected decimal, found: ", getCurrentLine());
+                return ERROR;
+            }
+        } else { // q1
+            undoLastMove();
+            return LIT_INTEGER;
+        }
+        // q10
+    } else if (firstChar == '.') {    // If it starts with ".", at least one decimal
+        if (isdigit(next_char())) { // q10 -> q6
+            isDecimal(); // q6 -> q6
+            char nextChar = next_char();
+            if (nextChar == 'e' || nextChar == 'E') { // q6 -> q7
+                nextChar = next_char();
+                if (nextChar == '-' || nextChar == '+') nextChar = next_char();
+                if (isdigit(nextChar)) { // q7 | q8 -> q9
+                    isDecimal();
+                    return LIT_FLOAT;
+                } else { //TODO: change error log function
+                    error_log("Error parsing float's exponent, expected decimal, found: ", getCurrentLine());
+                    return ERROR;
+                }
+            }
+        }
+    }
 }
 
 int isDecimal() {
