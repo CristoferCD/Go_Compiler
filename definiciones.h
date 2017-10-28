@@ -101,3 +101,11 @@
 #define OP_AMPEXPEQ 724
 
 #define ERROR (-42)
+
+//LITERALS
+#define LIT_INTEGER 800
+#define LIT_FLOAT 801
+#define LIT_IMAGINARY 802
+#define LIT_STRING 803
+#define LIT_OCTAL 804
+#define LIT_HEXADECIMAL 805
