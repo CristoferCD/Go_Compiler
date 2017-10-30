@@ -5,7 +5,7 @@
 #include "sistemaEntrada.h"
 #include "gestorErrores.h"
 
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 32
 
 char bloqueA[BLOCK_SIZE];
 char bloqueB[BLOCK_SIZE];

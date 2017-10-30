@@ -47,6 +47,7 @@
 #define SELECT 344
 #define SWITCH 345
 #define TYPE 346
+#define BLANKID 347
 
 //OPERATORS
 //+=
@@ -101,6 +102,7 @@
 #define OP_AMPEXPEQ 724
 
 #define ERROR (-42)
+#define UNIDENTIFIED (-88)
 
 //LITERALS
 #define LIT_INTEGER 800

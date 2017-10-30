@@ -17,7 +17,9 @@ int isNumberLiteral(char firstChar) ;
 int isDecimal() ;
 int isOctal() ;
 int isHexadecimal() ;
+int isOperator(char nextChar) ;
 ////////////////////////
+
 
 node next_component() {
     node nextComp;
@@ -47,25 +49,35 @@ node next_component() {
 int init_Automata () {
     while(1) {
         char nextChar = next_char();
+
         if (nextChar == EOF) return nextChar;
         else if (isdigit(nextChar) || nextChar == '.') return isNumber(nextChar);
         else if (nextChar == '"') return isString();
         else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem(); //Only _ return blankID
         else if (nextChar == ' ' || nextChar == '\n' || nextChar == '\r') return 1;
-        else if (nextChar == '/') return isComment();
-        else return 42;
+        else if (nextChar == '/') {
+            int foundComponent = isComment();
+            if (foundComponent == UNIDENTIFIED) {
+                foundComponent = isOperator(nextChar);
+                if (foundComponent == UNIDENTIFIED) // Standalone token
+                    return nextChar;
+            }
+            return foundComponent;
+        }
+        else return isOperator(nextChar);
     }
 }
 
 int isNumber(char firstChar) {
     int lexComponent = isNumberLiteral(firstChar);
 
-    if (lexComponent != ERROR) { //Check imaginary
+    if (lexComponent != ERROR && lexComponent != UNIDENTIFIED) { //Check imaginary
         if (next_char() == 'i')
             return LIT_IMAGINARY;
         else
             undoLastMove();
-    }
+    } else if (lexComponent == UNIDENTIFIED)
+        return firstChar;
 
     return lexComponent;
 }
@@ -135,6 +147,9 @@ int isNumberLiteral(char firstChar) {
                     return ERROR;
                 }
             }
+        } else {
+            undoLastMove();
+            return UNIDENTIFIED;
         }
     }
 }
@@ -193,6 +208,10 @@ int isComment() {
                 return ERROR;
             }
         }
+    } else {
+        // The symbol '/' doesn't start a comment
+        undoLastMove();
+        return UNIDENTIFIED;
     }
 }
 
@@ -214,4 +233,87 @@ int isString() {
         }
     }
     return LIT_STRING;
+}
+
+int isOperator(char nextChar) {
+    char secondChar = next_char();
+    switch (nextChar) {
+        case '+':
+            if (secondChar == '=') return OP_PLUSEQ;
+            else if (secondChar == '+') return OP_PLUSPLUS;
+            break;
+        case '&':
+            if (secondChar == '=') return OP_AMPEQ;
+            else if (secondChar == '&') return OP_AMPAMP;
+            else if (secondChar == '^') {
+                if (next_char() == '=') {
+                    return OP_AMPEXPEQ;
+                } else {
+                    undoLastMove();
+                    return OP_AMPEXP;
+                }
+            }
+            break;
+        case '=':
+            if (secondChar == '=') return OP_EQEQ;
+            break;
+        case '!':
+            if (secondChar == '=') return OP_NEQ;
+            break;
+        case '-':
+            if (secondChar == '=') return OP_SUBEQ;
+            else if (secondChar == '-') return OP_SUBSUB;
+            break;
+        case '|':
+            if (secondChar == '=') return OP_OREQ;
+            else if (secondChar == '|') return OP_OROR;
+            break;
+        case '<':
+            if (secondChar == '=') return OP_LEQ;
+            else if (secondChar == '<') {
+                if (next_char() == '=') {
+                    return OP_LESSLESSEQ;
+                } else {
+                    undoLastMove();
+                    return OP_LESSLESS;
+                }
+            } else if (secondChar == '-') return OP_LEFTARROW;
+            break;
+        case '*':
+            if (secondChar == '=') return OP_MULTEQ;
+            break;
+        case '^':
+            if (secondChar == '=') return OP_EXPEQ;
+            break;
+        case '>':
+            if (secondChar == '=') return OP_MEQ;
+            else if (secondChar == '>')
+                if (next_char() == '=') {
+                    return OP_MOREMOREEQ;
+                } else {
+                    undoLastMove();
+                    return OP_MOREMORE;
+                }
+            break;
+        case '/':
+            if (secondChar == '=') return OP_FORWARDSLASHEQ;
+            break;
+        case ':':
+            if (secondChar == '=') return OP_COLONEQ;
+            break;
+        case '%':
+            if (secondChar == '=') return OP_PERCENTAGEEQ;
+            break;
+        case '.':
+            if (secondChar == '.') {
+                if (next_char() == '.') return OP_DOTS;
+                else undoLastMove();
+            }
+            break;
+        default:
+            undoLastMove();
+            return nextChar;
+    }
+    undoLastMove();
+    return nextChar;
 }
