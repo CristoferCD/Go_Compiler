@@ -6,7 +6,7 @@
 #include "gestorErrores.h"
 #include "definiciones.h"
 
-#define BLOCK_SIZE 32
+#define BLOCK_SIZE 256
 
 char bloqueA[BLOCK_SIZE];
 char bloqueB[BLOCK_SIZE];
@@ -103,6 +103,7 @@ char* getPartialComponent() {
     //Get second part
     char* secondAux = inicioAux;
     unsigned int size1 = 0;
+    if (secondAux == delantero) delantero++;
     while(secondAux != delantero) {
         if (secondAux == &bloqueA[BLOCK_SIZE-1] || secondAux == &bloqueB[BLOCK_SIZE-1]) {
             error_log("Error reading token, size is bigger than allowed.", getCurrentLine());

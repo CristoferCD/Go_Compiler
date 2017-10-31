@@ -71,7 +71,7 @@ int init_Automata () {
 int isNumber(char firstChar) {
     int lexComponent = isNumberLiteral(firstChar);
 
-    if (lexComponent != ERROR && lexComponent != UNIDENTIFIED) { //Check imaginary
+    if (lexComponent == LIT_INTEGER || lexComponent == LIT_FLOAT) { //Check imaginary
         if (next_char() == 'i')
             return LIT_IMAGINARY;
         else
