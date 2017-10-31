@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "sistemaEntrada.h"
 #include "gestorErrores.h"
+#include "definiciones.h"
 
 #define BLOCK_SIZE 32
 
@@ -103,6 +104,10 @@ char* getPartialComponent() {
     char* secondAux = inicioAux;
     unsigned int size1 = 0;
     while(secondAux != delantero) {
+        if (secondAux == &bloqueA[BLOCK_SIZE-1] || secondAux == &bloqueB[BLOCK_SIZE-1]) {
+            error_log("Error reading token, size is bigger than allowed.", getCurrentLine());
+            return " ";
+        }
         secondAux++;
         size1++;
     }
@@ -133,12 +138,11 @@ int getCurrentLine() {
 }
 
 void undoLastMove() {
-    //TODO: if there is a block change, the next block is overwritten.
     if (delantero == &bloqueA[0]) {
-        delantero = &bloqueB[BLOCK_SIZE - 2];
+        delantero = &bloqueB[BLOCK_SIZE - 1];
         blockAlreadyRead = 1;
     } else if (delantero == &bloqueB[0]) {
-        delantero = &bloqueA[BLOCK_SIZE - 2];
+        delantero = &bloqueA[BLOCK_SIZE - 1];
         blockAlreadyRead = 1;
     } else
         delantero--;
