@@ -48,6 +48,7 @@
 #define SWITCH 345
 #define TYPE 346
 #define BLANKID 347
+#define LINEBREAK 348
 
 //OPERATORS
 //+=

@@ -1,4 +1,3 @@
-#include "reservedWords.h"
 #include "definiciones.h"
 
 const char* reservedWords[] =       {"break"      , "case"   , "chan"   , "const"    , "continue"  , "default", "defer"    , "else"     ,

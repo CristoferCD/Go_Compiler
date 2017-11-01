@@ -4,7 +4,6 @@
 #include "sistemaEntrada.h"
 #include "definiciones.h"
 #include "gestorErrores.h"
-#include "tablaSimbolos.h"
 
 ////////////////////////
 // Function Declarations
@@ -18,6 +17,7 @@ int isDecimal() ;
 int isOctal() ;
 int isHexadecimal() ;
 int isOperator(char nextChar) ;
+int hasExponent();
 ////////////////////////
 
 
@@ -53,8 +53,9 @@ int init_Automata () {
         if (nextChar == EOF) return nextChar;
         else if (isdigit(nextChar) || nextChar == '.') return isNumber(nextChar);
         else if (nextChar == '"') return isString();
-        else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem(nextChar); //Only _ return blankID
-        else if (nextChar == ' ' || nextChar == '\n' || nextChar == '\r') return 1;
+        else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem(nextChar);
+        else if (nextChar == ' ' || nextChar == '\r') return 1;
+        else if (nextChar == '\n') return LINEBREAK;
         else if (nextChar == '/') {
             int foundComponent = isComment();
             if (foundComponent == UNIDENTIFIED) {
@@ -81,7 +82,6 @@ int isNumber(char firstChar) {
 
     return lexComponent;
 }
-
 int isNumberLiteral(char firstChar) {
     if (firstChar == '0') {
         char nextChar = next_char();
@@ -103,30 +103,20 @@ int isNumberLiteral(char firstChar) {
                 nextChar = next_char();
             }
             if (nextChar == 'e' | 'E') { // q5 | q6 -> q7
-                nextChar = next_char();
-                if (nextChar == '+' || nextChar == '-') nextChar = next_char();
-                if (isdigit(nextChar)) {
-                    isDecimal();
-                    return LIT_FLOAT;
-                } else {
-                    error_log("Error parsing float's exponent, expected decimal, found: ", getCurrentLine());
-                    return ERROR;
-                }
+                int isExponent = hasExponent();
+                if (isExponent == UNIDENTIFIED)
+                    undoLastMove(); // Discards character 'E'
+                return LIT_FLOAT;
             } else {
                 // Number ending in "."
                 undoLastMove();
                 return LIT_INTEGER;
             }
         } else if (nextChar == 'e' || nextChar == 'E') { // q1 -> q7
-            nextChar = next_char();
-            if (nextChar == '+' || nextChar == '-') nextChar = next_char();
-            if (isdigit(nextChar)) {
-                isDecimal();
-                return LIT_FLOAT;
-            } else {
-                error_log("Error parsing float's exponent, expected decimal, found: ", getCurrentLine());
-                return ERROR;
-            }
+            int isExponent = hasExponent();
+            if (isExponent == UNIDENTIFIED)
+                undoLastMove(); // Discards character 'E'
+            return LIT_FLOAT;
         } else { // q1
             undoLastMove();
             return LIT_INTEGER;
@@ -137,20 +127,33 @@ int isNumberLiteral(char firstChar) {
             isDecimal(); // q6 -> q6
             char nextChar = next_char();
             if (nextChar == 'e' || nextChar == 'E') { // q6 -> q7
-                nextChar = next_char();
-                if (nextChar == '-' || nextChar == '+') nextChar = next_char();
-                if (isdigit(nextChar)) { // q7 | q8 -> q9
-                    isDecimal();
-                    return LIT_FLOAT;
-                } else { //TODO: change error log function
-                    error_log("Error parsing float's exponent, expected decimal, found: ", getCurrentLine());
-                    return ERROR;
-                }
+                int isExponent = hasExponent();
+                if (isExponent == UNIDENTIFIED)
+                    undoLastMove(); // Discards character 'E'
+                return LIT_FLOAT;
             }
         } else {
             undoLastMove();
             return UNIDENTIFIED;
         }
+    }
+}
+
+int hasExponent() {
+    char nextChar = next_char();
+    int charsAdvanced = 1;
+    if (nextChar == '-' || nextChar == '+') {
+        nextChar = next_char();
+        charsAdvanced++;
+    }
+    if (isdigit(nextChar)) { // q7 | q8 -> q9
+        isDecimal();
+        return LIT_FLOAT;
+    } else {
+        undoLastMove();
+        if (charsAdvanced == 2)
+            undoLastMove();
+        return UNIDENTIFIED;
     }
 }
 

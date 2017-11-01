@@ -4,16 +4,15 @@
 #include <stdlib.h>
 #include "sistemaEntrada.h"
 #include "gestorErrores.h"
-#include "definiciones.h"
 
 #define BLOCK_SIZE 256
 
 char bloqueA[BLOCK_SIZE];
 char bloqueB[BLOCK_SIZE];
-char* inicio;
-char* delantero;
+char* inicio = NULL;
+char* delantero = NULL;
 FILE* file;
-unsigned int currentLine = 0;
+unsigned int currentLine = 1;
 char blockAlreadyRead = 0;
 
 int getComponentSize() {
@@ -32,7 +31,7 @@ void inputSys_init() {
     file = fopen("../source/concurrentSum.go", "rb");
 
     if (file == NULL) {
-        error_log("Error opening file\n", 0);
+        error_log("[INPUT_SYS] Error opening file\n", 0);
         exit(11);
     }
 
@@ -106,16 +105,17 @@ char* getPartialComponent() {
     if (secondAux == delantero) delantero++;
     while(secondAux != delantero) {
         if (secondAux == &bloqueA[BLOCK_SIZE-1] || secondAux == &bloqueB[BLOCK_SIZE-1]) {
-            error_log("Error reading token, size is bigger than allowed.", getCurrentLine());
+            error_log("[INPUT_SYS] Error reading token, size is bigger than allowed.", getCurrentLine());
             return " ";
         }
         secondAux++;
         size1++;
     }
     // Generate full component
-    char* component = malloc(size+size1);
+    char* component = malloc(size+size1+1);
     strncpy(component, firstPart, size);
     strncat(component, inicioAux, size1);
+    component[size+size1] = '\0';
 
     return component;
 }
@@ -127,8 +127,9 @@ char* input_Sys_getComponent() {
     if (componentSize == -1) {
         currentComponent = getPartialComponent();
     } else {
-        currentComponent = malloc((size_t) componentSize);
+        currentComponent = malloc((size_t) componentSize + 1);
         strncpy(currentComponent, inicio, (size_t) componentSize);
+        currentComponent[componentSize] = '\0';
     }
     inicio = delantero;
     return currentComponent;

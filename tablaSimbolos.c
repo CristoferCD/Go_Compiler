@@ -24,7 +24,9 @@ void treeRemove(abb *A, char* key) ;
 void destroy(abb* A) ;
 int contains(abb* A, char* key) ;
 void insert(abb *A, itemNode element) ;
+void printTree(abb* A) ;
 ////////////////////////////////////////////
+
 
 // Variable used as root of the symbol table
 abb *tableRoot;
@@ -94,15 +96,18 @@ void treeRemove(abb *A, char* key) {
         else if (keyComparison < 0)
             treeRemove(&(*A)->right, key);
         else if ((*A)->left == NULL && (*A)->right == NULL) {
+            free((*A)->info.key);
             free(*A);
             *A = NULL;
         } else if ((*A)->left == NULL) {
             aux = *A;
             *A = (*A)->right;
+            free(aux->info.key);
             free(aux);
         } else if ((*A)->right == NULL) {
             aux = *A;
             *A = (*A)->left;
+            free(aux->info.key);
             free(aux);
         } else {
             (*A)->info = remove_last(&(*A)->right);
