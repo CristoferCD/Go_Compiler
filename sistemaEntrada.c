@@ -28,7 +28,7 @@ int getComponentSize() {
 }
 
 void inputSys_init() {
-    file = fopen("../source/concurrentSum.go", "rb");
+    file = fopen("source/concurrentSum.go", "rb");
 
     if (file == NULL) {
         error_log("[INPUT_SYS] Error opening file\n", 0);
