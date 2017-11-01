@@ -315,9 +315,20 @@ int isOperator(char nextChar) {
                 else undoLastMove();
             }
             break;
-        default:
+        case '(':
+        case ')':
+        case '[':
+        case ']':
+        case ',':
+        case '{':
+        case '}':
+        case ';':
             undoLastMove();
             return nextChar;
+        default:
+            error_log("[LEX] Found invalid character", getCurrentLine());
+            undoLastMove();
+            return ERROR;
     }
     undoLastMove();
     return nextChar;

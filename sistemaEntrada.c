@@ -52,7 +52,6 @@ char next_char() {
     char newChar = *delantero;
 
     if (newChar == '\n') currentLine++;
-    //TODO: check if lex is bigger than buffer size
     if (newChar == EOF) {
         if (delantero == &bloqueA[BLOCK_SIZE-1]) {
             if (!blockAlreadyRead) {
@@ -140,6 +139,7 @@ int getCurrentLine() {
 }
 
 void undoLastMove() {
+    // Change block if needed
     if (delantero == &bloqueA[0]) {
         delantero = &bloqueB[BLOCK_SIZE - 1];
         blockAlreadyRead = 1;
