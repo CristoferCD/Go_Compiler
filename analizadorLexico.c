@@ -10,7 +10,7 @@
 // Function Declarations
 int init_Automata ();
 int isNumber(char firstChar);
-int alphanumericItem();
+int alphanumericItem(char firstChar);
 int isComment();
 int isString();
 int isNumberLiteral(char firstChar) ;
@@ -53,7 +53,7 @@ int init_Automata () {
         if (nextChar == EOF) return nextChar;
         else if (isdigit(nextChar) || nextChar == '.') return isNumber(nextChar);
         else if (nextChar == '"') return isString();
-        else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem(); //Only _ return blankID
+        else if (isalpha(nextChar) || nextChar == '_') return alphanumericItem(nextChar); //Only _ return blankID
         else if (nextChar == ' ' || nextChar == '\n' || nextChar == '\r') return 1;
         else if (nextChar == '/') {
             int foundComponent = isComment();
@@ -178,15 +178,17 @@ int isHexadecimal() {
     return LIT_HEXADECIMAL;
 }
 
-int alphanumericItem() {
+int alphanumericItem(char firstChar) {
     char nextChar = next_char();
+    short singleCharToken = 1;
     while (isalnum(nextChar) || nextChar == '_') {
         nextChar = next_char();
+        singleCharToken = 0;
     }
     //Discards last character that wasn't alpha
     undoLastMove();
-
-    return ID;
+    if (singleCharToken && firstChar == '_') return BLANKID;
+    else return ID;
 }
 
 int isComment() {
