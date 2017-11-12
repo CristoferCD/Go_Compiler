@@ -1,16 +1,13 @@
 #include <stdio.h>
 #include "tablaSimbolos.h"
 #include "analizadorSintactico.h"
-#include "sistemaEntrada.h"
+#include "lex/lex.yy.h"
 
 int main(int argc, char** argv) {
     symbolTable_init();
-    inputSys_init();
-    //printf("--------------SYMBOL TABLE-------------\n");
-    //symbolTable_print();
+    yyin = fopen("../source/concurrentSum.go", "r");
     printf("-------------ANALYSIS------------------\n");
     analyze();
-    //printf("---------------FINAL SYMBOL TABLE-----------\n");
-    //symbolTable_print();
     symbolTable_free();
+    fclose(yyin);
 }
